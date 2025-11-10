@@ -34,7 +34,7 @@ def set_global_font():
         try:
             fm.fontManager.addfont(font_path)
             mpl.rcParams["font.family"] = "Source Han Sans CN"
-            st.write("已加载字体：Source Han Sans CN")
+            # st.write("已加载字体：Source Han Sans CN")
         except Exception as e:
             st.warning(f"字体加载失败，使用默认字体。错误信息：{e}")
     else:
