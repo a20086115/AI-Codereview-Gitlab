@@ -22,30 +22,30 @@ class WeComNotifier:
         :raises ValueError: 如果未找到 Webhook URL
         """
         # 如果未提供 project_name，直接返回默认的 Webhook URL
-        if not project_name:
-            if self.default_webhook_url:
-                return self.default_webhook_url
-            else:
-                raise ValueError("未提供项目名称，且未设置默认的企业微信 Webhook URL。")
+        candidate_keys = []
 
-        # 构造目标键
-        target_key_project = f"WECOM_WEBHOOK_URL_{project_name.upper()}"
-        target_key_url_slug = f"WECOM_WEBHOOK_URL_{url_slug.upper()}"
+        def normalize(value: str) -> str:
+            # 仅保留字母数字，其他字符使用下划线占位，避免环境变量命名非法
+            return re.sub(r'[^A-Z0-9]', '_', value.upper())
 
-        # 遍历环境变量
-        for env_key, env_value in os.environ.items():
-            env_key_upper = env_key.upper()
-            if env_key_upper == target_key_project:
-                return env_value  # 找到项目名称对应的 Webhook URL，直接返回
-            if env_key_upper == target_key_url_slug:
-                return env_value  # 找到 GitLab URL 对应的 Webhook URL，直接返回
+        if project_name:
+            candidate_keys.append(normalize(project_name))
+
+        if url_slug:
+            candidate_keys.append(normalize(url_slug))
+
+        for key in candidate_keys:
+            env_key = f"WECOM_WEBHOOK_URL_{key}"
+            env_value = os.environ.get(env_key)
+            if env_value:
+                return env_value
 
         # 如果未找到匹配的环境变量，降级使用全局的 Webhook URL
         if self.default_webhook_url:
             return self.default_webhook_url
 
         # 如果既未找到匹配项，也没有默认值，抛出异常
-        raise ValueError(f"未找到项目 '{project_name}' 对应的企业微信 Webhook URL，且未设置默认的 Webhook URL。")
+        raise ValueError(f"未找到项目 '{project_name or url_slug}' 对应的企业微信 Webhook URL，且未设置默认的 Webhook URL。")
 
     def format_markdown_content(self, content, title=None):
         """

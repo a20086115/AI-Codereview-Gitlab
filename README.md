@@ -135,7 +135,7 @@ streamlit run ui.py --server.port=5002 --server.address=0.0.0.0
 
 在 GitLab 项目设置中，配置 Webhook：
 
-- URL：http://your-server-ip:5001/review/webhook
+- URL：http://your-server-ip:5001/review/webhook 
 - Trigger Events：勾选 Push Events 和 Merge Request Events (不要勾选其它Event)
 - Secret Token：上面配置的 Access Token(可选)
 
@@ -161,6 +161,19 @@ streamlit run ui.py --server.port=5002 --server.address=0.0.0.0
   ```
 
 企业微信和飞书推送配置类似，具体参见 [常见问题](doc/faq.md)
+
+- 企业微信支持按项目 / GitLab 实例自定义机器人。示例：
+  ```
+  # 启用企业微信推送
+  WECOM_ENABLED=1
+  WECOM_WEBHOOK_URL=https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=global
+
+  # 为项目 my-service 指定独立机器人（会自动将项目名转为大写并替换非字母数字为下划线）
+  WECOM_WEBHOOK_URL_MY_SERVICE=https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=my-service
+
+  # 如需按 GitLab 实例区分，可使用实例 slug（例如 gitlab.example.com -> GITLAB_EXAMPLE_COM）
+  WECOM_WEBHOOK_URL_GITLAB_EXAMPLE_COM=https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=gitlab
+  ```
 
 ## 其它
 
